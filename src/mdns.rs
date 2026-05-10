@@ -1,10 +1,10 @@
 use crate::config::{Config, Record};
 use anyhow::Result;
 use dns_parser::{Packet, QueryClass, QueryType};
+use std::collections::HashMap;
 use std::net::Ipv4Addr;
 use std::sync::Arc;
 use tokio::net::UdpSocket;
-use std::collections::HashMap;
 
 const MDNS_MULTICAST_ADDR: &str = "224.0.0.251";
 const MDNS_PORT: u16 = 5353;
@@ -40,7 +40,11 @@ impl MdnsServer {
         let interface: Ipv4Addr = "0.0.0.0".parse().unwrap();
         socket.join_multicast_v4(multicast_addr, interface)?;
 
-        tracing::info!("mDNS server listening on {}:{}", MDNS_MULTICAST_ADDR, MDNS_PORT);
+        tracing::info!(
+            "mDNS server listening on {}:{}",
+            MDNS_MULTICAST_ADDR,
+            MDNS_PORT
+        );
 
         let mut buf = [0u8; 65535];
         loop {
@@ -61,7 +65,11 @@ impl MdnsServer {
         }
 
         let question = &packet.questions[0];
-        let qname = question.qname.to_string().trim_end_matches('.').to_lowercase();
+        let qname = question
+            .qname
+            .to_string()
+            .trim_end_matches('.')
+            .to_lowercase();
         let qtype = question.qtype;
 
         tracing::debug!("mDNS Query: {} type: {:?}", qname, qtype);
@@ -70,7 +78,8 @@ impl MdnsServer {
             return None;
         }
 
-        let answers: Vec<_> = self.records
+        let answers: Vec<_> = self
+            .records
             .get(&qname)
             .iter()
             .flat_map(|records| {
@@ -80,7 +89,9 @@ impl MdnsServer {
                         QueryType::All => true,
                         _ => false,
                     };
-                    if !matches { return None; }
+                    if !matches {
+                        return None;
+                    }
                     Some(r.clone())
                 })
             })
@@ -98,12 +109,18 @@ impl MdnsServer {
 
         response.extend_from_slice(&packet.header.id.to_be_bytes());
         response.extend_from_slice(&[
-            0x81, 0x80,
-            0x00, 0x00,
-            0x00, 0x00,
-            (answers.len() as u8), 0x00,
-            0x00, 0x00,
-            0x00, 0x00,
+            0x81,
+            0x80,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            (answers.len() as u8),
+            0x00,
+            0x00,
+            0x00,
+            0x00,
+            0x00,
         ]);
 
         for q in &packet.questions {

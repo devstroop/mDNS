@@ -1,9 +1,9 @@
 use crate::config::{Config, Record};
 use anyhow::Result;
 use dns_parser::{Packet, QueryClass, QueryType};
+use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::net::UdpSocket;
-use std::collections::HashMap;
 
 pub struct DnsServer {
     config: Arc<Config>,
@@ -16,7 +16,7 @@ impl DnsServer {
         for zone in &config.zones {
             for record in &zone.records {
                 let key = format!("{}.{}", record.name, zone.name).to_lowercase();
-                
+
                 records.entry(key).or_default().push(record.clone());
             }
         }
@@ -47,7 +47,11 @@ impl DnsServer {
         }
 
         let question = &packet.questions[0];
-        let qname = question.qname.to_string().trim_end_matches('.').to_lowercase();
+        let qname = question
+            .qname
+            .to_string()
+            .trim_end_matches('.')
+            .to_lowercase();
         let qtype = question.qtype;
 
         tracing::debug!("Query: {} type: {:?}", qname, qtype);
@@ -56,7 +60,8 @@ impl DnsServer {
             return None;
         }
 
-        let answers: Vec<_> = self.records
+        let answers: Vec<_> = self
+            .records
             .get(&qname)
             .iter()
             .flat_map(|records| {
@@ -68,7 +73,9 @@ impl DnsServer {
                         QueryType::SRV => r.record_type == "SRV",
                         _ => false,
                     };
-                    if !matches { return None; }
+                    if !matches {
+                        return None;
+                    }
                     Some(r.clone())
                 })
             })

@@ -6,8 +6,8 @@ use anyhow::Result;
 use clap::Parser;
 use config::Config;
 use std::sync::Arc;
-use tracing_subscriber::util::SubscriberInitExt;
 use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 
 #[derive(Parser, Debug)]
 #[command(name = "mdnsd")]
@@ -59,7 +59,8 @@ async fn main() -> Result<()> {
         loop {
             tokio::time::sleep(tokio::time::Duration::from_secs(3600)).await;
         }
-    }).await;
+    })
+    .await;
 
     Ok(())
 }
