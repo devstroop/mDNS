@@ -1,12 +1,12 @@
-# mdnsd - DNS/mDNS Server
+# mDNS - DNS/mDNS Server
 
 A headless, TOML-config-driven DNS/mDNS server.
 
 ## Files Included
 
-- `mdnsd` - Binary executable
+- `mDNS` - Binary executable
 - `config.toml` - Configuration template
-- `mdnsd.service` - Systemd service unit (Linux)
+- `mDNS.service` - Systemd service unit (Linux)
 
 ## Configuration
 
@@ -45,36 +45,36 @@ value = "192.168.1.100"
 
 1. Create directory and copy files:
 ```bash
-sudo mkdir -p /etc/mdnsd
-sudo cp mdnsd /usr/local/bin/
-sudo cp config.toml /etc/mdnsd/config.toml
-sudo cp mdnsd.service /etc/systemd/system/
+sudo mkdir -p /etc/mDNS
+sudo cp mDNS /usr/local/bin/
+sudo cp config.toml /etc/mDNS/config.toml
+sudo cp mDNS.service /etc/systemd/system/
 ```
 
 2. Enable and start:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable mdnsd
-sudo systemctl start mdnsd
+sudo systemctl enable mDNS
+sudo systemctl start mDNS
 ```
 
 3. Check status:
 ```bash
-sudo systemctl status mdnsd
+sudo systemctl status mDNS
 ```
 
 ### macOS (Homebrew service)
 
 1. Copy binary and config:
 ```bash
-sudo cp mdnsd /usr/local/bin/
-sudo mkdir -p /usr/local/etc/mdnsd
-sudo cp config.toml /usr/local/etc/mdnsd/config.toml
+sudo cp mDNS /usr/local/bin/
+sudo mkdir -p /usr/local/etc/mDNS
+sudo cp config.toml /usr/local/etc/mDNS/config.toml
 ```
 
 2. Create launchd plist:
 ```bash
-sudo nano /Library/LaunchDaemons/com.devstroop.mdnsd.plist
+sudo nano /Library/LaunchDaemons/com.devstroop.mDNS.plist
 ```
 
 Add:
@@ -84,12 +84,12 @@ Add:
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.devstroop.mdnsd</string>
+    <string>com.devstroop.mDNS</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/mdnsd</string>
+        <string>/usr/local/bin/mDNS</string>
         <string>-c</string>
-        <string>/usr/local/etc/mdnsd/config.toml</string>
+        <string>/usr/local/etc/mDNS/config.toml</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -101,30 +101,30 @@ Add:
 
 3. Load service:
 ```bash
-sudo launchctl load /Library/LaunchDaemons/com.devstroop.mdnsd.plist
+sudo launchctl load /Library/LaunchDaemons/com.devstroop.mDNS.plist
 ```
 
 ### Windows (NSSM service)
 
 1. Create directories:
 ```cmd
-mkdir C:\mdnsd
-copy mdnsd.exe C:\mdnsd\
-copy config.toml C:\mdnsd\
+mkdir C:\mDNS
+copy mDNS.exe C:\mDNS\
+copy config.toml C:\mDNS\
 ```
 
 2. Download NSSM: https://nssm.cc/download
 
 3. Install service:
 ```cmd
-nssm install mdnsd C:\mdnsd\mdnsd.exe "-c C:\mdnsd\config.toml"
-nssm start mdnsd
+nssm install mDNS C:\mDNS\mDNS.exe "-c C:\mDNS\config.toml"
+nssm start mDNS
 ```
 
 Or use PowerShell service:
 ```powershell
-New-Service -Name mdnsd -BinaryPathName "C:\mdnsd\mdnsd.exe -c C:\mdnsd\config.toml" -StartupType Automatic
-Start-Service mdnsd
+New-Service -Name mDNS -BinaryPathName "C:\mDNS\mDNS.exe -c C:\mDNS\config.toml" -StartupType Automatic
+Start-Service mDNS
 ```
 
 ---
@@ -146,12 +146,12 @@ sudo lsof -i :53
 
 ### View logs (Linux)
 ```bash
-sudo journalctl -u mdnsd -f
+sudo journalctl -u mDNS -f
 ```
 
 ### Check config syntax
 ```bash
-./mdnsd --config /etc/mdnsd/config.toml
+./mDNS --config /etc/mDNS/config.toml
 ```
 
 ---

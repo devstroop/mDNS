@@ -1,4 +1,4 @@
-# mdnsd
+# mDNS
 
 A headless, TOML-config-driven DNS/mDNS server written in Rust.
 
@@ -54,7 +54,7 @@ value = "192.168.1.1"
 ## Options
 
 ```bash
-mdnsd --config custom.toml --port 5353
+mDNS --config custom.toml --port 5353
 ```
 
 - `--config`, `-c`: Config file path (default: config.toml)

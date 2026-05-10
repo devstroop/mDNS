@@ -43,13 +43,13 @@ jobs:
       - name: Package
         shell: bash
         run: |
-          name="mdnsd-${{ matrix.target }}"
+          name="mDNS-${{ matrix.target }}"
           ext="${{ matrix.ext }}"
           mkdir -p release/${name}
-          cp target/release/mdnsd${ext} release/${name}/mdnsd${ext}
+          cp target/release/mDNS${ext} release/${name}/mDNS${ext}
           cp config.toml release/${name}/
 
-          printf '[Unit]\nDescription=mDNS/DNS Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nExecStart=/usr/local/bin/mdnsd -c /etc/mdnsd/config.toml\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\n' > release/${name}/mdnsd.service
+          printf '[Unit]\nDescription=mDNS/DNS Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nExecStart=/usr/local/bin/mdnsd -c /etc/mdnsd/config.toml\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\n' > release/${name}/mDNS.service
 
           cp release-readme.md release/${name}/README.md
 
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: binary-${{ matrix.target }}
-          path: release/mdnsd-${{ matrix.target }}.${{ matrix.archive }}
+          path: release/mDNS-${{ matrix.target }}.${{ matrix.archive }}
 
   create-release:
     needs: build
@@ -84,8 +84,8 @@ jobs:
           tag="${GITHUB_REF#refs/tags/}"
           files=$(find artifacts -type f)
           gh release create "$tag" \
-            --title "mdnsd ${tag}" \
-            --notes "mdnsd ${tag}" \
+            --title "mDNS ${tag}" \
+            --notes "mDNS ${tag}" \
             $files
 
         env:
