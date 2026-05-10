@@ -66,11 +66,11 @@ jobs:
       - name: Create Release
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-          files=$(find artifacts -type f | sed 's/^/"/;s/$/"/')
+          cd artifacts
           gh release create "$tag" \
             --title "mdnsd ${tag}" \
             --notes "mdnsd ${tag}" \
-            $files
+            ./*
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
