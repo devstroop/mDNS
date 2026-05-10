@@ -1,0 +1,15 @@
+[server]
+host = "0.0.0.0"
+port = 53
+
+[mdns]
+enabled = false
+ttl = 300
+
+[[zones]]
+name = "local"
+
+[[zones.records]]
+name = "host"
+type = "A"
+value = "192.168.1.1"

@@ -1,0 +1,20 @@
+stages:
+  - build
+  - test
+
+variables:
+  CARGO_TERM_COLOR: always
+
+rust-check:
+  stage: build
+  image: rust:latest
+  script:
+    - cargo fmt --check
+    - cargo clippy -- -D warnings
+    - cargo build --release
+
+rust-test:
+  stage: test
+  image: rust:latest
+  script:
+    - cargo test
