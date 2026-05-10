@@ -2,7 +2,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, Default)]
 pub struct Config {
     #[serde(default)]
     pub server: ServerConfig,
@@ -10,16 +10,6 @@ pub struct Config {
     pub mdns: MdnsConfig,
     #[serde(default)]
     pub zones: Vec<Zone>,
-}
-
-impl Default for Config {
-    fn default() -> Self {
-        Self {
-            server: ServerConfig::default(),
-            mdns: MdnsConfig::default(),
-            zones: Vec::new(),
-        }
-    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Default)]
