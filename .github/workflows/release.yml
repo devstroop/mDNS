@@ -44,55 +44,11 @@ jobs:
           mkdir -p release/${name}
           cp target/release/mdnsd${ext} release/${name}/mdnsd${ext}
           cp config.toml release/${name}/
-          
-          # Systemd service
-          cat > release/${name}/mdnsd.service << 'EOF'
-[Unit]
-Description=mDNS/DNS Server
-After=network.target
 
-[Service]
-Type=simple
-User=root
-ExecStart=/usr/local/bin/mdnsd -c /etc/mdnsd/config.toml
-Restart=always
+          printf '[Unit]\nDescription=mDNS/DNS Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nExecStart=/usr/local/bin/mdnsd -c /etc/mdnsd/config.toml\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\n' > release/${name}/mdnsd.service
 
-[Install]
-WantedBy=multi-user.target
-EOF
-          
-          # README
-          cat > release/${name}/README.md << 'EOF'
-# mdnsd
+          printf '# mdnsd\n\n## Installation\n\nLinux (systemd):\nsudo cp mdnsd /usr/local/bin/\nsudo cp config.toml /etc/mdnsd/config.toml\nsudo cp mdnsd.service /etc/systemd/system/\nsudo systemctl enable mdnsd\nsudo systemctl start mdnsd\n\nmacOS:\nsudo cp mdnsd /usr/local/bin/\nsudo cp config.toml /etc/mdnsd/config.toml\n\n## Testing\ndig @127.0.0.1 -p 53 your-record.local\n' > release/${name}/README.md
 
-## Installation
-
-### Linux (systemd)
-```bash
-sudo cp mdnsd /usr/local/bin/
-sudo cp config.toml /etc/mdnsd/config.toml
-sudo cp mdnsd.service /etc/systemd/system/
-sudo systemctl enable mdnsd
-sudo systemctl start mdnsd
-```
-
-### macOS
-```bash
-sudo cp mdnsd /usr/local/bin/
-sudo cp config.toml /etc/mdnsd/config.toml
-# Use launchd or homebrew service
-```
-
-## Configuration
-Edit `config.toml` to add DNS records.
-
-## Testing
-```bash
-dig @127.0.0.1 -p 53 your-record.local
-```
-EOF
-          
-          # Archive
           cd release
           tar -czvf ${name}.tar.gz ${name}/
 
