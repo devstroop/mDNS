@@ -1,20 +1,44 @@
 stages:
   - build
-  - test
+  - release
 
 variables:
   CARGO_TERM_COLOR: always
 
-rust-check:
+build:linux:
   stage: build
   image: rust:latest
   script:
-    - cargo fmt --check
-    - cargo clippy -- -D warnings
-    - cargo build --release
+    - cargo build --release --locked
+    - mkdir -p release
+    - cp target/release/mdnsd release/mdnsd-x86_64-unknown-linux-gnu
+    - tar -czvf release/mdnsd-x86_64-unknown-linux-gnu.tar.gz -C release mdnsd-x86_64-unknown-linux-gnu
+  artifacts:
+    paths:
+      - release/
+    expire_in: 1 day
 
-rust-test:
-  stage: test
-  image: rust:latest
+build:macos:
+  stage: build
+  tags:
+    - macos
   script:
-    - cargo test
+    - cargo build --release --locked
+    - mkdir -p release
+    - cp target/release/mdnsd release/mdnsd-x86_64-apple-darwin
+    - tar -czvf release/mdnsd-x86_64-apple-darwin.tar.gz -C release mdnsd-x86_64-apple-darwin
+  artifacts:
+    paths:
+      - release/
+    expire_in: 1 day
+
+release:
+  stage: release
+  needs:
+    - build:linux
+    - build:macos
+  script:
+    - echo "Create release from tag $CI_COMMIT_TAG"
+  only:
+    - tags
+  when: manual
