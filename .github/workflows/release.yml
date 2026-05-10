@@ -51,7 +51,7 @@ jobs:
 
           printf '[Unit]\nDescription=mDNS/DNS Server\nAfter=network.target\n\n[Service]\nType=simple\nUser=root\nExecStart=/usr/local/bin/mdnsd -c /etc/mdnsd/config.toml\nRestart=always\n\n[Install]\nWantedBy=multi-user.target\n' > release/${name}/mdnsd.service
 
-          printf '# mdnsd\n\n## Installation\n\nLinux (systemd):\nsudo cp mdnsd /usr/local/bin/\nsudo cp config.toml /etc/mdnsd/config.toml\nsudo cp mdnsd.service /etc/systemd/system/\nsudo systemctl enable mdnsd\nsudo systemctl start mdnsd\n\nmacOS:\nsudo cp mdnsd /usr/local/bin/\nsudo cp config.toml /etc/mdnsd/config.toml\n\n## Testing\ndig @127.0.0.1 -p 53 your-record.local\n' > release/${name}/README.md
+          cp release-readme.md release/${name}/README.md
 
           cd release
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
