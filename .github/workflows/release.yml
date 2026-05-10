@@ -43,11 +43,10 @@ jobs:
           ext="${{ matrix.ext }}"
           mkdir -p release
           cp target/release/mdnsd${ext} release/${name}${ext}
-          echo ${name}${ext} > release/name
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target }}
+          name: binary-${{ matrix.target }}
           path: release/
 
   create-release:
@@ -67,13 +66,11 @@ jobs:
       - name: Create Release
         run: |
           tag="${GITHUB_REF#refs/tags/}"
-          name="mdnsd-${tag}"
-          body="## mdnsd ${tag}"
-
+          files=$(find artifacts -type f | sed 's/^/"/;s/$/"/')
           gh release create "$tag" \
             --title "mdnsd ${tag}" \
-            --notes "$body" \
-            $(find artifacts -type f -name "*mdnsd*" | sed 's/^/"/;s/$/"/')
+            --notes "mdnsd ${tag}" \
+            $files
 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
