@@ -41,13 +41,65 @@ jobs:
         run: |
           name="mdnsd-${{ matrix.target }}"
           ext="${{ matrix.ext }}"
-          mkdir -p release
-          cp target/release/mdnsd${ext} release/${name}${ext}
+          mkdir -p release/${name}
+          cp target/release/mdnsd${ext} release/${name}/mdnsd${ext}
+          cp config.toml release/${name}/
+          
+          # Systemd service
+          cat > release/${name}/mdnsd.service << 'EOF'
+[Unit]
+Description=mDNS/DNS Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/mdnsd -c /etc/mdnsd/config.toml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+          
+          # README
+          cat > release/${name}/README.md << 'EOF'
+# mdnsd
+
+## Installation
+
+### Linux (systemd)
+```bash
+sudo cp mdnsd /usr/local/bin/
+sudo cp config.toml /etc/mdnsd/config.toml
+sudo cp mdnsd.service /etc/systemd/system/
+sudo systemctl enable mdnsd
+sudo systemctl start mdnsd
+```
+
+### macOS
+```bash
+sudo cp mdnsd /usr/local/bin/
+sudo cp config.toml /etc/mdnsd/config.toml
+# Use launchd or homebrew service
+```
+
+## Configuration
+Edit `config.toml` to add DNS records.
+
+## Testing
+```bash
+dig @127.0.0.1 -p 53 your-record.local
+```
+EOF
+          
+          # Archive
+          cd release
+          tar -czvf ${name}.tar.gz ${name}/
 
       - uses: actions/upload-artifact@v6
         with:
           name: binary-${{ matrix.target }}
-          path: release/mdnsd-${{ matrix.target }}${{ matrix.ext }}
+          path: release/mdnsd-${{ matrix.target }}.tar.gz
 
   create-release:
     needs: build
